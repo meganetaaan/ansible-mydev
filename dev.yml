@@ -1,0 +1,63 @@
+---
+- hosts: dev
+  connection: local
+  become: yes
+  user: ishikawa
+  tasks:
+    - name: install packages build-essential
+      apt: name=build-essential update_cache=yes
+
+    - name: install packages curl
+      apt: name=curl update_cache=yes
+
+    - name: install packages git
+      apt: name=git update_cache=yes
+
+    - name: install packages zsh
+      apt: name=zsh update_cache=yes
+
+    - name: change shell
+      command: chsh ishikawa -s '/usr/bin/zsh'
+
+    - name: clone dotfiles
+      git:
+        repo=https://github.com/meganetaaan/dotfiles
+        dest=~/dotfiles
+      become: no
+
+    - name: copy ~/.zshrc
+      copy:
+        src=~/dotfiles/.zshrc
+        dest=~/.zshrc
+      become: no
+
+    - name: install anyenv
+      git:
+        repo=https://github.com/riywo/anyenv
+        dest=~/.anyenv
+
+    - name: add apt repository for neovim
+      apt_repository:
+        repo='ppa:neovim-ppa/unstable'
+        update_cache=yes
+
+    - name: install neovim
+      apt: name=neovim update_cache=yes
+
+    - name: install neovim python3 prerequisities
+      apt: name=python3-dev,python3-pip update_cache=yes
+
+    - name: add repository for peco
+      apt_repository:
+        repo='ppa:ubuntu-lxc/lxd-stable' update_cache=yes
+
+    - name: install peco
+      apt: name=peco update_cache=yes
+
+  #    - name: mkdir config nvim
+  #      file: path=~/.config/nvim state=directory
+  #      become: no
+
+  #    - name: install spacevim
+  #      shell: curl -sLf https://spacevim.org/install.sh | bash
+  #      become: no

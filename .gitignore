@@ -1,0 +1,6 @@
+private.yml
+### https://raw.github.com/github/gitignore/3c0d3149123c828133d66c483fe4340379ef7533/Global/Ansible.gitignore
+
+*.retry
+
+
