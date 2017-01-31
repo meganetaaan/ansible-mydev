@@ -16,6 +16,9 @@
     - name: install packages zsh
       apt: name=zsh update_cache=yes
 
+    - name: install tmux
+      apt: name=tmux update_cache=yes
+
     - name: change shell
       command: chsh ishikawa -s '/usr/bin/zsh'
 
@@ -31,10 +34,37 @@
         dest=~/.zshrc
       become: no
 
+    - name: undo directory
+      file:
+        path=~/.vim/undo
+        state=directory
+      become: no
+
     - name: install anyenv
       git:
         repo=https://github.com/riywo/anyenv
         dest=~/.anyenv
+      become: no
+
+    - name: install ndenv
+      shell: /bin/bash -lc "~/.anyenv/bin/anyenv install ndenv"
+      become: no
+
+    - name: install node stable
+      shell: /bin/bash -lc "ndenv install v6.9.4"
+      become: no
+
+    - name: install goenv
+      shell: /bin/bash -lc "~/.anyenv/bin/anyenv install goenv"
+      become: no
+
+    - name: add golang repository
+      apt_repository:
+        repo='ppa:ubuntu-lxc/lxd-stable'
+        update_cache=yes
+
+    - name: install golang
+      apt: name=golang update_cache=yes
 
     - name: add apt repository for neovim
       apt_repository:
@@ -47,17 +77,10 @@
     - name: install neovim python3 prerequisities
       apt: name=python3-dev,python3-pip update_cache=yes
 
-    - name: add repository for peco
-      apt_repository:
-        repo='ppa:ubuntu-lxc/lxd-stable' update_cache=yes
+    - name: install rust
+      shell: curl https://sh.rustup.rs -sSf | sh
+      become: no
 
-    - name: install peco
-      apt: name=peco update_cache=yes
-
-  #    - name: mkdir config nvim
-  #      file: path=~/.config/nvim state=directory
-  #      become: no
-
-  #    - name: install spacevim
-  #      shell: curl -sLf https://spacevim.org/install.sh | bash
+  #    - name: install peco
+  #      command: go get github.com/peco/peco/cmd/peco
   #      become: no
